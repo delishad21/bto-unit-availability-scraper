@@ -1,0 +1,11 @@
+archive
+.venv
+.env
+app 1.0
+
+generate_script_new.py
+getProtectedUnit.xml
+layout.png
+
+Unit_Availability_*
+availability_log.json
