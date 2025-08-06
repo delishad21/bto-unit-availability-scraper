@@ -4,6 +4,7 @@ import json
 import time
 import openpyxl
 import xml.etree.ElementTree as ET
+from datetime import datetime, date
 from collections import defaultdict
 from datetime import datetime
 from seleniumwire import webdriver
@@ -82,20 +83,34 @@ def load_history():
 
 def update_history(history, availability_set, xml_unit_ids):
     timestamp = datetime.now().isoformat()
-    if history.get("runs"):
-        raw_prev = history["runs"][-1].get("timestamp", "")
+    today = date.today()
+
+    # Find the most recent previous run that was not today
+    previous_run = None
+    for run in reversed(history.get("runs", [])):
+        try:
+            run_date = datetime.fromisoformat(run["timestamp"]).date()
+            if run_date < today:
+                previous_run = run
+                break
+        except Exception:
+            continue
+
+    if previous_run:
+        raw_prev = previous_run.get("timestamp", "")
         try:
             dt_prev = datetime.fromisoformat(raw_prev)
             previous_timestamp_str = dt_prev.strftime("%d %B %Y, %H:%M:%S")
         except Exception:
             previous_timestamp_str = raw_prev
-        last_run_avail = set(history["runs"][-1].get("available", []))
+        last_run_avail = set(previous_run.get("available", []))
     else:
         previous_timestamp_str = ""
         last_run_avail = set()
 
     newly_taken = sorted(last_run_avail - availability_set)
 
+    # Save the new run to history
     history["runs"].append({
         "timestamp": timestamp,
         "available": sorted(availability_set),
@@ -356,7 +371,7 @@ def create_summary_sheet(wb, block_stats, newly_taken, previous_timestamp_str, i
         ws.add_image(summary_image)
 
     row += 2
-    ws.cell(row=row, column=1, value=f"Units Taken Since Last Run on {previous_timestamp_str}").font = Font(bold=True, size=13)
+    ws.cell(row=row, column=1, value=f"Units Taken Since {previous_timestamp_str}").font = Font(bold=True, size=13)
     ws.append(["Block", "Level", "Unit"])
     for unit_str in newly_taken:
         parts = unit_str.split("_")
