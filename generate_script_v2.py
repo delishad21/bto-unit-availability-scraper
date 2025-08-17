@@ -64,7 +64,7 @@ def login_and_capture_requests():
                     body = gzip.decompress(body)
                 root = ET.fromstring(body.decode('utf-8'))
                 project_name = root.find(".//project-name").text
-                room_type = root.find(".//flat-type").text
+                room_type = root.find(".//type").text
                 for unit_elem in root.findall(".//unit-id"):
                     xml_unit_ids.add(unit_elem.text)
                 break
@@ -180,9 +180,11 @@ def create_excel(api_data, xml_unit_ids, newly_taken, previous_timestamp_str, pr
     create_summary_sheet(wb, block_stats, newly_taken, previous_timestamp_str, img_to_add)
 
     wb._sheets = [wb[s] for s in ["_Summary"] + sorted([s for s in wb.sheetnames if s != "_Summary"], key=lambda x: x.lower())]
-    wb.save(EXCEL_PATH)
+
+    os.makedirs("Generated_Files", exist_ok=True)
+    wb.save(os.path.join("Generated_Files", EXCEL_PATH))
     print(f"✅ Workbook saved: {EXCEL_PATH}")
-    os.startfile(EXCEL_PATH)
+    os.startfile(os.path.join("Generated_Files", EXCEL_PATH))
 
 
 def create_block_sheet(wb, block, units, floor_set, availability_set, newly_taken,
