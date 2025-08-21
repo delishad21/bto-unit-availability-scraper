@@ -27,12 +27,16 @@ HDB only allows access to the unit info if you have a queue number for the BTO, 
     BTO_UNIT_PREFIX = "2024-06_BTO_"
     ```
 
-4. Run the script
+4. You can optionally include a screenshot of the BTO layout by placing an image file named `layout.png` in the
+   same directory as the script. The script will automatically include this image at the side of every generated
+   sheet in the excel file. If you choose not have a layout image, the script will still run fine without it.
+
+5. Run the script
    ```bash
    python generate_script_v2.py
    ```
 
-5. When the browser opens, log in to the HDB website. After scanning the QR code and logging in, do not click anything or close the browser window. The script will automatically navigate to the bto project page and scrape the data. After which, the script will generate an excel file with the data.
+6. When the browser opens, click on the sign in button, scan the QR code using your singpass app to sign into the HDB website. After allowing the sign in on your singpass app, do not click anything or close the browser window. The script will automatically navigate to the bto project page and scrape the data. After which, the script will generate an excel file with the data. If you click anything in the browser window during this process, it may interfere with the script's ability to scrape the data.
 
 ## Disclaimer
 This script is not affiliated with or endorsed by the Housing & Development Board (HDB) of Singapore. Use at your own risk.
